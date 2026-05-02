@@ -1,0 +1,26 @@
+"""Telephony provider registry.
+
+Maps provider names to their implementations.
+Add new providers here after creating their module.
+"""
+
+from cogniflow_home.telephony.base import TelephonyProvider
+from cogniflow_home.telephony.exotel_provider import ExotelProvider
+from cogniflow_home.telephony.generic_provider import GenericProvider
+from cogniflow_home.telephony.twilio_provider import TwilioProvider
+
+PROVIDERS: dict[str, type[TelephonyProvider]] = {
+    "twilio": TwilioProvider,
+    "exotel": ExotelProvider,
+    "generic": GenericProvider,
+}
+
+
+def get_provider(name: str) -> TelephonyProvider:
+    provider_class = PROVIDERS.get(name.lower())
+    if not provider_class:
+        raise ValueError(
+            f"Unknown telephony provider: {name}. "
+            f"Available: {', '.join(PROVIDERS.keys())}"
+        )
+    return provider_class()
