@@ -1246,9 +1246,11 @@ async def api_deploy_template(template_id: str, request: Request):
         "tts_provider": tts_provider,
         "voice_id": body.get("voice_id", tpl["persona"].get("voice_id", "")),
         "tools_enabled": tpl.get("tools_used", []),
-        "template_id": template_id,
+        "metadata": {"template_id": template_id},
     }
     agent = await create_agent(agent_data)
+    if not agent:
+        return JSONResponse({"error": "Failed to deploy template agent"}, status_code=500)
     return {
         "agent_id": str(agent.get("id", "")),
         "agent_name": agent.get("name", agent_name),
